@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家庭菜谱看板</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       设计系统 - Design System
+       ======================================== */
+    :root {
+      /* 色彩 */
+      --color-wood-dark: #4A3B2A;
+      --color-wood: #6B5344;
+      --color-wood-light: #A68B6A;
+      --color-moss: #5C7A3E;
+      --color-moss-light: #7A9F56;
+      --color-cream: #F7F3ED;
+      --color-paper: #FDFBF8;
+      --color-paper-aged: #F0EBE3;
+      --color-text: #2D2418;
+      --color-text-muted: #7A6B5A;
+      --color-border: rgba(107, 83, 68, 0.12);
+      --color-shadow: rgba(45, 36, 24, 0.08);
+      --color-shadow-md: rgba(45, 36, 24, 0.12);
+      --color-shadow-lg: rgba(45, 36, 24, 0.18);
+
+      /* 圆角 */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+
+      /* 间距 */
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 20px;
+      --space-lg: 32px;
+      --space-xl: 48px;
+
+      /* 字体 */
+      --font-serif: "Noto Serif SC", "PingFang SC", serif;
+      --font-sans: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-cream);
+      color: var(--color-text);
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* 纸张纹理 */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ========================================
+       头部 - Header
+       ======================================== */
+    .header {
+      background: linear-gradient(180deg, var(--color-wood-dark) 0%, var(--color-wood) 100%);
+      padding: 56px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 24px;
+      background: var(--color-cream);
+    }
+
+    /* 波浪分隔线 */
+    .header::after {
+      content: "";
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 36px;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1440 36' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,36 Q180,0 360,36 T720,36 T1080,36 T1440,36 V36 H0Z' fill='%235C7A3E'/%3E%3C/svg%3E");
+      background-size: 720px 36px;
+    }
+
+    /* 装饰元素 */
+    .header-deco {
+      position: absolute;
+      font-size: 2.5rem;
+      opacity: 0.12;
+      user-select: none;
+    }
+    .header-deco--left { left: 8%; top: 28px; transform: rotate(-15deg); }
+    .header-deco--right { right: 8%; top: 36px; transform: rotate(15deg); }
+
+    .header-inner { position: relative; z-index: 1; }
+
+    .header-icon {
+      display: block;
+      font-size: 2.8rem;
+      margin-bottom: 12px;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .header-title {
+      font-family: var(--font-serif);
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--color-paper);
+      letter-spacing: 6px;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    .header-subtitle {
+      margin-top: 10px;
+      color: var(--color-cream);
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      opacity: 0.85;
+    }
+
+    .header-action {
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
+
+    /* ========================================
+       按钮系统
+       ======================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 22px;
+      border-radius: 25px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn--primary {
+      background: var(--color-moss);
+      color: white;
+      box-shadow: 0 4px 16px rgba(92, 122, 62, 0.3);
+    }
+
+    .btn--primary:hover {
+      background: var(--color-moss-light);
+      transform: scale(1.04);
+      box-shadow: 0 6px 20px rgba(92, 122, 62, 0.4);
+    }
+
+    .btn--ghost {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn--ghost:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    /* ========================================
+       主内容区
+       ======================================== */
+    .main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg) 120px;
+    }
+
+    /* ========================================
+       菜谱网格
+       ======================================== */
+    .recipes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    /* ========================================
+       菜谱卡片
+       ======================================== */
+    .recipe-card {
+      background: var(--color-paper);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 4px 20px var(--color-shadow);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .recipe-card:hover {
+      transform: translateY(-14px);
+      box-shadow: 0 20px 48px var(--color-shadow-lg);
+    }
+
+    /* 顶部装饰条 */
+    .recipe-card__top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg,
+        var(--color-moss) 0%,
+        var(--color-wood-light) 50%,
+        var(--color-moss) 100%
+      );
+      z-index: 2;
+    }
+
+    /* 左侧装饰线 */
+    .recipe-card__side-line {
+      position: absolute;
+      top: 6px; left: 0;
+      width: 4px;
+      height: calc(100% - 6px);
+      background: linear-gradient(180deg, var(--color-moss), var(--color-wood-light));
+      border-radius: 0 3px 3px 0;
+    }
+
+    /* 图片区域 */
+    .recipe-card__image-wrap {
+      position: relative;
+      height: 240px;
+      overflow: hidden;
+    }
+
+    .recipe-card__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .recipe-card:hover .recipe-card__image {
+      transform: scale(1.08);
+    }
+
+    /* 图片渐变遮罩 */
+    .recipe-card__image-wrap::after {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(45,36,24,0.35), transparent);
+      pointer-events: none;
+    }
+
+    /* 标签浮层 */
+    .recipe-card__tags {
+      position: absolute;
+      top: 18px; right: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 3;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 14px;
+      background: rgba(253, 251, 248, 0.92);
+      color: var(--color-text);
+      border-radius: 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      backdrop-filter: blur(6px);
+    }
+
+    /* 内容区域 */
+    .recipe-card__body {
+      padding: var(--space-md) var(--space-md) var(--space-sm) 28px;
+    }
+
+    .recipe-card__title {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .recipe-card__title::after {
+      content: "";
+      position: absolute;
+      bottom: -5px; left: 0;
+      width: 36px; height: 3px;
+      background: var(--color-moss);
+      border-radius: 2px;
+    }
+
+    .recipe-card__meta {
+      display: flex;
+      gap: 18px;
+      margin-top: 14px;
+    }
+
+    .recipe-card__meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    /* 底部 */
+    .recipe-card__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px 18px 28px;
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .recipe-card__link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-moss);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: gap 0.3s;
+    }
+
+    .recipe-card:hover .recipe-card__link { gap: 12px; }
+
+    .recipe-card__arrow {
+      transition: transform 0.3s;
+    }
+
+    .recipe-card:hover .recipe-card__arrow { transform: translateX(4px); }
+
+    /* ========================================
+       空状态
+       ======================================== */
+    .empty {
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .empty__icon {
+      font-size: 4.5rem;
+      margin-bottom: 20px;
+      display: block;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .empty__text {
+      font-size: 1.15rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ========================================
+       浮动操作按钮
+       ======================================== */
+    .fab {
+      position: fixed;
+      right: 44px;
+      bottom: 44px;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-moss) 0%, var(--color-moss-light) 100%);
+      color: white;
+      border: none;
+      font-size: 2.4rem;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(92, 122, 62, 0.4);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fab:hover {
+      transform: scale(1.12) rotate(90deg);
+      box-shadow: 0 14px 36px rgba(92, 122, 62, 0.5);
+    }
+
+    /* ========================================
+       模态框
+       ======================================== */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(45, 36, 24, 0.75);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: var(--space-lg);
+      backdrop-filter: blur(6px);
+    }
+
+    .modal.is-active { display: flex; }
+
+    .modal__content {
+      background: var(--color-paper);
+      border-radius: var(--radius-xl);
+      max-width: 1100px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(45, 36, 24, 0.35);
+      animation: modalIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(24px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal__close {
+      position: absolute;
+      top: 18px; right: 18px;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s;
+      backdrop-filter: blur(6px);
+    }
+
+    .modal__close:hover {
+      background: var(--color-cream);
+      transform: scale(1.1);
+    }
+
+    .modal__image {
+      width: 100%;
+      height: 340px;
+      object-fit: cover;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+
+    .modal__body {
+      padding: var(--space-lg);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+    }
+
+    .modal__header { grid-column: 1 / -1; }
+
+    .modal__title {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .modal__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .modal__section {
+      background: var(--color-paper-aged);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border-left: 5px solid var(--color-moss);
+    }
+
+    .modal__section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-moss);
+      margin-bottom: var(--space-sm);
+    }
+
+    /* 列表样式 */
+    .list { list-style: none; }
+
+    .list__item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--color-border);
+      font-size: 1rem;
+    }
+
+    .list__item:last-child { border-bottom: none; }
+
+    .list--ingredients .list__item::before {
+      content: "🌿";
+      flex-shrink: 0;
+    }
+
+    .list__step-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background: var(--color-moss);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       管理面板
+       ======================================== */
+    .admin-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: -440px;
+      width: 440px;
+      height: 100%;
+      background: var(--color-paper);
+      box-shadow: -10px 0 36px var(--color-shadow-md);
+      z-index: 900;
+      transition: right 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
+
+    .admin-panel.is-active { display: block; right: 0; }
+
+    .admin-panel__header {
+      background: linear-gradient(135deg, var(--color-wood) 0%, var(--color-wood-dark) 100%);
+      color: white;
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .admin-panel__title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .admin-panel__close {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .admin-panel__close:hover { background: rgba(255,255,255,0.3); }
+
+    .admin-panel__list {
+      padding: var(--space-lg);
+    }
+
+    /* 管理项 */
+    .admin-item {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      background: var(--color-cream);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 14px;
+      transition: all 0.25s;
+    }
+
+    .admin-item:hover {
+      box-shadow: 0 4px 18px var(--color-shadow);
+    }
+
+    .admin-item__thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 2px solid var(--color-paper);
+    }
+
+    .admin-item__info { flex: 1; }
+
+    .admin-item__name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: 5px;
+    }
+
+    .admin-item__tags {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    .admin-item__actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .admin-btn {
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .admin-btn--edit {
+      background: var(--color-moss);
+      color: white;
+    }
+
+    .admin-btn--edit:hover { background: var(--color-moss-light); }
+
+    .admin-btn--delete {
+      background: #E57373;
+      color: white;
+    }
+
+    .admin-btn--delete:hover { background: #D32F2F; }
+
+    /* ========================================
+       表单
+       ======================================== */
+    .form-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(45, 36, 24, 0.82);
+      z-index: 1100;
+      justify-content: center;
+      align-items: center;
+      padding: var(--space-lg);
+      backdrop-filter: blur(8px);
+    }
+
+    .form-modal.is-active { display: flex; }
+
+    .form-modal__content {
+      background: var(--color-paper);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(45, 36, 24, 0.3);
+      animation: modalIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-modal__title {
+      font-family: var(--font-serif);
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-align: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    /* 表单行 */
+    .form-row {
+      margin-bottom: 20px;
+    }
+
+    .form-row--2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .form-group { display: flex; flex-direction: column; }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--color-text);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid var(--color-cream);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      background: var(--color-cream);
+      transition: all 0.25s;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-moss);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(92, 122, 62, 0.1);
+    }
+
+    .form-input--textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 14px;
+      margin-top: var(--space-lg);
+    }
+
+    .btn--confirm {
+      flex: 1;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--color-moss) 0%, var(--color-moss-light) 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      box-shadow: 0 4px 18px rgba(92, 122, 62, 0.3);
+    }
+
+    .btn--confirm:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(92, 122, 62, 0.4);
+    }
+
+    .btn--cancel {
+      flex: 1;
+      padding: 16px;
+      background: var(--color-cream);
+      color: var(--color-text);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .btn--cancel:hover { background: var(--color-paper-aged); }
+
+    /* ========================================
+       移动端适配
+       ======================================== */
+    @media (max-width: 768px) {
+      .header { padding: 40px 16px 52px; }
+      .header-title { font-size: 2rem; letter-spacing: 3px; }
+      .header-icon { font-size: 2.4rem; }
+      .header-action { position: static; transform: none; margin-top: 16px; }
+
+      .main { padding: var(--space-md) 14px 100px; }
+
+      .recipes {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        padding: 0 4px;
+      }
+
+      .fab {
+        width: 62px;
+        height: 62px;
+        font-size: 2rem;
+        right: 20px;
+        bottom: 20px;
+      }
+
+      .admin-panel {
+        width: 100%;
+        right: -100%;
+      }
+
+      .modal__content { margin: 12px; max-height: 95vh; border-radius: var(--radius-lg); }
+      .modal__image { height: 220px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+      .modal__body { padding: var(--space-md); grid-template-columns: 1fr; }
+      .modal__title { font-size: 1.6rem; }
+
+      .form-modal__content { padding: 28px 20px; margin: 12px; border-radius: var(--radius-lg); }
+
+      .recipe-card__meta {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .recipe-card__image-wrap {
+        height: 160px;
+      }
+
+      .recipe-card__body {
+        padding: 14px 14px 10px 24px;
+      }
+
+      .recipe-card__title {
+        font-size: 1.1rem;
+      }
+
+      .recipe-card__footer {
+        padding: 10px 14px 12px 24px;
+      }
+    }
+
+    /* ========================================
+       动画
+       ======================================== */
+    .fade-in {
+      animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .recipe-card:nth-child(1) { animation-delay: 0.06s; }
+    .recipe-card:nth-child(2) { animation-delay: 0.12s; }
+    .recipe-card:nth-child(3) { animation-delay: 0.18s; }
+    .recipe-card:nth-child(4) { animation-delay: 0.24s; }
+    .recipe-card:nth-child(5) { animation-delay: 0.3s; }
+    .recipe-card:nth-child(6) { animation-delay: 0.36s; }
+  </style>
+</head>
+<body>
+
+  <!-- 头部 -->
+  <header class="header">
+    <span class="header-deco header-deco--left">🌿</span>
+    <span class="header-deco header-deco--right">🥬</span>
+    <div class="header-inner">
+      <span class="header-icon">🍳</span>
+      <h1 class="header-title">家庭菜谱看板</h1>
+      <p class="header-subtitle">记录家的味道</p>
+    </div>
+    <div class="header-action">
+      <button class="btn btn--ghost" onclick="toggleAdminPanel()">⚙️ 管理</button>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="main">
+    <div class="recipes" id="recipesGrid"></div>
+    <div class="empty" id="emptyState" style="display: none;">
+      <span class="empty__icon">🍳</span>
+      <p class="empty__text">还没有菜谱，点击右下角添加第一道菜吧！</p>
+    </div>
+  </main>
+
+  <!-- 浮动按钮 -->
+  <button class="fab" onclick="openForm()" title="添加菜谱">+</button>
+
+  <!-- 详情弹窗 -->
+  <div class="modal" id="detailModal">
+    <div class="modal__content">
+      <button class="modal__close" onclick="closeDetail()">✕</button>
+      <img class="modal__image" id="modalImage" src="" alt="" onerror="this.src='https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&h=500&fit=crop'">
+      <div class="modal__body">
+        <div class="modal__header">
+          <h2 class="modal__title" id="modalTitle"></h2>
+          <div class="modal__tags" id="modalTags"></div>
+        </div>
+        <div class="modal__section">
+          <h3 class="modal__section-title">🥗 原料</h3>
+          <ul class="list list--ingredients" id="modalIngredients"></ul>
+        </div>
+        <div class="modal__section">
+          <h3 class="modal__section-title">👨‍🍳 做法</h3>
+          <ol class="list" id="modalSteps"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 管理面板 -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-panel__header">
+      <h2 class="admin-panel__title">📝 菜谱管理</h2>
+      <button class="admin-panel__close" onclick="toggleAdminPanel()">✕</button>
+    </div>
+    <div class="admin-panel__list" id="adminList"></div>
+  </div>
+
+  <!-- 表单弹窗 -->
+  <div class="form-modal" id="formModal">
+    <div class="form-modal__content">
+      <h2 class="form-modal__title" id="formTitle">添加菜谱</h2>
+      <form id="recipeForm" onsubmit="handleSubmit(event)">
+        <input type="hidden" id="editId">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">菜名</label>
+            <input type="text" class="form-input" id="nameInput" required placeholder="例如：红烧肉">
+          </div>
+        </div>
+
+        <div class="form-row form-row--2">
+          <div class="form-group">
+            <label class="form-label">图片URL</label>
+            <input type="url" class="form-input" id="imageInput" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">标签（用逗号分隔）</label>
+            <input type="text" class="form-input" id="tagsInput" placeholder="例如：下饭,硬菜">
+          </div>
+        </div>
+
+        <div class="form-row form-row--2">
+          <div class="form-group">
+            <label class="form-label">原料（每行一个）</label>
+            <textarea class="form-input form-input--textarea" id="ingredientsInput"
+              placeholder="五花肉 300g&#10;生抽 2勺&#10;老抽 1勺"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">做法（每行一步）</label>
+            <textarea class="form-input form-input--textarea" id="stepsInput"
+              placeholder="五花肉切块焯水&#10;热锅凉油炒糖色&#10;放入五花肉翻炒上色"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn--cancel" onclick="closeForm()">取消</button>
+          <button type="submit" class="btn btn--confirm">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================
+       数据
+       ======================================== */
+    const sampleRecipes = [
+      {
+        id: Date.now() - 4,
+        name: "番茄炒蛋",
+        image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=500&fit=crop",
+        tags: ["快手", "家常"],
+        ingredients: ["番茄 2个", "鸡蛋 3个", "盐 适量", "糖 少许", "葱花 适量"],
+        steps: ["番茄切块，鸡蛋打散加少许盐", "热锅凉油，倒入蛋液炒至凝固盛出", "锅中留底油，放入番茄块翻炒出汁", "倒入炒好的鸡蛋，加盐和糖调味", "撒上葱花出锅"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: Date.now() - 3,
+        name: "红烧肉",
+        image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=500&fit=crop",
+        tags: ["硬菜", "下饭"],
+        ingredients: ["五花肉 500g", "生抽 2勺", "老抽 1勺", "冰糖 30g", "八角 2个", "桂皮 1小块", "葱姜 适量"],
+        steps: ["五花肉切方块，冷水下锅焯水", "锅中放少许油，冰糖小火炒至焦糖色", "放入五花肉翻炒上色", "加生抽、老抽、八角、桂皮、葱姜", "加开水没过肉，大火烧开转小火炖1小时", "大火收汁即可"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: Date.now() - 2,
+        name: "酸辣土豆丝",
+        image: "https://images.unsplash.com/photo-1596560548464-f010549b84d7?w=800&h=500&fit=crop",
+        tags: ["素菜", "下饭"],
+        ingredients: ["土豆 2个", "干辣椒 适量", "花椒 少许", "蒜末 适量", "白醋 2勺", "盐 适量"],
+        steps: ["土豆去皮切细丝，泡水去淀粉", "锅中烧水，土豆丝焯水至断生捞出过凉水", "热锅凉油，爆香花椒、干辣椒、蒜末", "倒入土豆丝大火快炒", "加白醋、盐调味，翻炒均匀即可"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: Date.now() - 1,
+        name: "蒜蓉西兰花",
+        image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&h=500&fit=crop",
+        tags: ["健康", "素菜"],
+        ingredients: ["西兰花 1颗", "蒜末 3瓣", "蚝油 1勺", "盐 适量", "食用油 适量"],
+        steps: ["西兰花切成小朵，用盐水浸泡10分钟", "烧一锅水，加少许盐和油，西兰花焯水1分钟捞出", "热锅凉油，爆香蒜末", "倒入西兰花快速翻炒", "加蚝油和盐调味即可"],
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    /* ========================================
+       数据操作
+       ======================================== */
+    function loadRecipes() {
+      const stored = localStorage.getItem('familyRecipes');
+      if (stored) return JSON.parse(stored);
+      saveRecipes(sampleRecipes);
+      return sampleRecipes;
+    }
+
+    function saveRecipes(recipes) {
+      localStorage.setItem('familyRecipes', JSON.stringify(recipes));
+    }
+
+    /* ========================================
+       渲染
+       ======================================== */
+    function renderRecipes() {
+      const recipes = loadRecipes();
+      const grid = document.getElementById('recipesGrid');
+      const empty = document.getElementById('emptyState');
+
+      if (recipes.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      grid.innerHTML = recipes.map(r => `
+        <article class="recipe-card fade-in" onclick="openDetail('${r.id}')">
+          <div class="recipe-card__top-bar"></div>
+          <div class="recipe-card__side-line"></div>
+          <div class="recipe-card__image-wrap">
+            <img class="recipe-card__image"
+              src="${r.image || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=600&h=400&fit=crop'}"
+              alt="${r.name}"
+              onerror="this.src='https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=600&h=400&fit=crop'">
+            <div class="recipe-card__tags">
+              ${r.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+            </div>
+          </div>
+          <div class="recipe-card__body">
+            <h3 class="recipe-card__title">${r.name}</h3>
+            <div class="recipe-card__meta">
+              <span class="recipe-card__meta-item">🥘 ${r.ingredients.length} 种原料</span>
+              <span class="recipe-card__meta-item">📝 ${r.steps.length} 步</span>
+            </div>
+          </div>
+          <div class="recipe-card__footer">
+            <span class="recipe-card__link">
+              查看详情 <span class="recipe-card__arrow">→</span>
+            </span>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function renderAdminList() {
+      const recipes = loadRecipes();
+      const list = document.getElementById('adminList');
+
+      if (recipes.length === 0) {
+        list.innerHTML = '<p style="text-align:center;color:#999;padding:40px;">暂无菜谱</p>';
+        return;
+      }
+
+      list.innerHTML = recipes.map(r => `
+        <div class="admin-item">
+          <img class="admin-item__thumb"
+            src="${r.image || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200&h=200&fit=crop'}"
+            alt="${r.name}"
+            onerror="this.src='https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200&h=200&fit=crop'">
+          <div class="admin-item__info">
+            <div class="admin-item__name">${r.name}</div>
+            <div class="admin-item__tags">${r.tags.join(', ')}</div>
+          </div>
+          <div class="admin-item__actions">
+            <button class="admin-btn admin-btn--edit" onclick="event.stopPropagation();editRecipe('${r.id}')">编辑</button>
+            <button class="admin-btn admin-btn--delete" onclick="event.stopPropagation();deleteRecipe('${r.id}')">删除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* ========================================
+       操作
+       ======================================== */
+    function openDetail(id) {
+      const recipes = loadRecipes();
+      const r = recipes.find(x => x.id == id);
+      if (!r) return;
+
+      document.getElementById('modalImage').src = r.image || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&h=500&fit=crop';
+      document.getElementById('modalTitle').textContent = r.name;
+      document.getElementById('modalTags').innerHTML = r.tags.map(t => `<span class="tag">${t}</span>`).join('');
+      document.getElementById('modalIngredients').innerHTML = r.ingredients.map(i => `<li class="list__item">${i}</li>`).join('');
+      document.getElementById('modalSteps').innerHTML = r.steps.map((s, i) => `<li class="list__item"><span class="list__step-num">${i + 1}</span><span>${s}</span></li>`).join('');
+
+      document.getElementById('detailModal').classList.add('is-active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetail() {
+      document.getElementById('detailModal').classList.remove('is-active');
+      document.body.style.overflow = '';
+    }
+
+    function toggleAdminPanel() {
+      const panel = document.getElementById('adminPanel');
+      panel.classList.toggle('is-active');
+      if (panel.classList.contains('is-active')) renderAdminList();
+    }
+
+    function openForm(id = null) {
+      const form = document.getElementById('formModal');
+      const title = document.getElementById('formTitle');
+      const editId = document.getElementById('editId');
+
+      if (id) {
+        const recipes = loadRecipes();
+        const r = recipes.find(x => x.id == id);
+        if (r) {
+          title.textContent = '编辑菜谱';
+          editId.value = id;
+          document.getElementById('nameInput').value = r.name;
+          document.getElementById('imageInput').value = r.image || '';
+          document.getElementById('tagsInput').value = r.tags.join(',');
+          document.getElementById('ingredientsInput').value = r.ingredients.join('\n');
+          document.getElementById('stepsInput').value = r.steps.join('\n');
+        }
+      } else {
+        title.textContent = '添加菜谱';
+        editId.value = '';
+        document.getElementById('recipeForm').reset();
+      }
+
+      form.classList.add('is-active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeForm() {
+      document.getElementById('formModal').classList.remove('is-active');
+      document.body.style.overflow = '';
+      document.getElementById('recipeForm').reset();
+    }
+
+    function editRecipe(id) { openForm(id); }
+
+    function deleteRecipe(id) {
+      if (!confirm('确定要删除这道菜吗？')) return;
+      let recipes = loadRecipes();
+      recipes = recipes.filter(r => r.id != id);
+      saveRecipes(recipes);
+      renderRecipes();
+      renderAdminList();
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      const editId = document.getElementById('editId').value;
+      const name = document.getElementById('nameInput').value.trim();
+      const image = document.getElementById('imageInput').value.trim();
+      const tags = document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(t => t);
+      const ingredients = document.getElementById('ingredientsInput').value.split('\n').map(i => i.trim()).filter(i => i);
+      const steps = document.getElementById('stepsInput').value.split('\n').map(s => s.trim()).filter(s => s);
+
+      if (!name) { alert('请输入菜名'); return; }
+
+      let recipes = loadRecipes();
+
+      if (editId) {
+        recipes = recipes.map(r => r.id == editId ? { ...r, name, image, tags, ingredients, steps } : r);
+      } else {
+        recipes.unshift({
+          id: Date.now(),
+          name, image, tags, ingredients, steps,
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      saveRecipes(recipes);
+      closeForm();
+      renderRecipes();
+      renderAdminList();
+    }
+
+    /* ========================================
+       初始化
+       ======================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRecipes();
+
+      document.getElementById('detailModal').addEventListener('click', e => {
+        if (e.target.id === 'detailModal') closeDetail();
+      });
+
+      document.getElementById('formModal').addEventListener('click', e => {
+        if (e.target.id === 'formModal') closeForm();
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeDetail(); closeForm(); }
+      });
+    });
+  </script>
+</body>
+</html>
