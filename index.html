@@ -673,130 +673,6 @@
     }
 
     /* ========================================
-       管理面板
-       ======================================== */
-    .admin-panel {
-      display: none;
-      position: fixed;
-      top: 0;
-      right: -440px;
-      width: 440px;
-      height: 100%;
-      background: var(--color-paper);
-      box-shadow: -10px 0 36px var(--color-shadow-md);
-      z-index: 900;
-      transition: right 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow-y: auto;
-    }
-
-    .admin-panel.is-active { display: block; right: 0; }
-
-    .admin-panel__header {
-      background: linear-gradient(135deg, var(--color-wood) 0%, var(--color-wood-dark) 100%);
-      color: white;
-      padding: var(--space-md) var(--space-lg);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .admin-panel__title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
-    .admin-panel__close {
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      font-size: 1.4rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .admin-panel__close:hover { background: rgba(255,255,255,0.3); }
-
-    .admin-panel__list {
-      padding: var(--space-lg);
-    }
-
-    /* 管理项 */
-    .admin-item {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      background: var(--color-cream);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      margin-bottom: 14px;
-      transition: all 0.25s;
-    }
-
-    .admin-item:hover {
-      box-shadow: 0 4px 18px var(--color-shadow);
-    }
-
-    .admin-item__thumb {
-      width: 72px;
-      height: 72px;
-      border-radius: var(--radius-sm);
-      object-fit: cover;
-      border: 2px solid var(--color-paper);
-    }
-
-    .admin-item__info { flex: 1; }
-
-    .admin-item__name {
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--color-text);
-      margin-bottom: 5px;
-    }
-
-    .admin-item__tags {
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-    }
-
-    .admin-item__actions {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .admin-btn {
-      padding: 7px 14px;
-      border-radius: var(--radius-sm);
-      border: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .admin-btn--edit {
-      background: var(--color-moss);
-      color: white;
-    }
-
-    .admin-btn--edit:hover { background: var(--color-moss-light); }
-
-    .admin-btn--delete {
-      background: #E57373;
-      color: white;
-    }
-
-    .admin-btn--delete:hover { background: #D32F2F; }
-
-    /* ========================================
        表单
        ======================================== */
     .form-modal {
@@ -941,11 +817,6 @@
         bottom: 20px;
       }
 
-      .admin-panel {
-        width: 100%;
-        right: -100%;
-      }
-
       .modal__content { margin: 8px; max-height: 96vh; border-radius: 12px; overflow-y: auto; }
       .modal__image { height: 180px; border-radius: 12px 12px 0 0; object-position: center top; }
       .modal__body { padding: 16px 18px 24px; grid-template-columns: 1fr; gap: 16px; }
@@ -1012,9 +883,6 @@
       <h1 class="header-title">家庭菜谱看板</h1>
       <p class="header-subtitle">记录家的味道</p>
     </div>
-    <div class="header-action">
-      <button class="btn btn--ghost" onclick="toggleAdminPanel()">⚙️ 管理</button>
-    </div>
   </header>
 
   <!-- 主内容 -->
@@ -1049,15 +917,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- 管理面板 -->
-  <div class="admin-panel" id="adminPanel">
-    <div class="admin-panel__header">
-      <h2 class="admin-panel__title">📝 菜谱管理</h2>
-      <button class="admin-panel__close" onclick="toggleAdminPanel()">✕</button>
-    </div>
-    <div class="admin-panel__list" id="adminList"></div>
   </div>
 
   <!-- 表单弹窗 -->
@@ -1316,30 +1175,6 @@
       `).join('');
     }
 
-    function renderAdminList() {
-      const recipes = loadRecipes();
-      const list = document.getElementById('adminList');
-
-      if (recipes.length === 0) {
-        list.innerHTML = '<p style="text-align:center;color:#999;padding:40px;">暂无菜谱</p>';
-        return;
-      }
-
-      list.innerHTML = recipes.map(r => `
-        <div class="admin-item">
-          ${r.image ? `<img class="admin-item__thumb" src="${r.image}" alt="${r.name}" onerror="this.src='./dish-tomato-scrambled-eggs.jpg'">` : `<div class="admin-item__thumb" style="background:var(--color-moss);display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;">🍽️</div>`}
-          <div class="admin-item__info">
-            <div class="admin-item__name">${r.name}</div>
-            <div class="admin-item__tags">${r.tags.join(', ')}</div>
-          </div>
-          <div class="admin-item__actions">
-            <button class="admin-btn admin-btn--edit" onclick="event.stopPropagation();editRecipe('${r.id}')">编辑</button>
-            <button class="admin-btn admin-btn--delete" onclick="event.stopPropagation();deleteRecipe('${r.id}')">删除</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
     /* ========================================
        操作
        ======================================== */
@@ -1367,12 +1202,6 @@
     function closeDetail() {
       document.getElementById('detailModal').classList.remove('is-active');
       document.body.style.overflow = '';
-    }
-
-    function toggleAdminPanel() {
-      const panel = document.getElementById('adminPanel');
-      panel.classList.toggle('is-active');
-      if (panel.classList.contains('is-active')) renderAdminList();
     }
 
     function openForm(id = null) {
@@ -1408,17 +1237,6 @@
       document.getElementById('recipeForm').reset();
     }
 
-    function editRecipe(id) { openForm(id); }
-
-    function deleteRecipe(id) {
-      if (!confirm('确定要删除这道菜吗？')) return;
-      let recipes = loadRecipes();
-      recipes = recipes.filter(r => r.id != id);
-      saveRecipes(recipes);
-      renderRecipes();
-      renderAdminList();
-    }
-
     function handleSubmit(e) {
       e.preventDefault();
 
@@ -1446,7 +1264,6 @@
       saveRecipes(recipes);
       closeForm();
       renderRecipes();
-      renderAdminList();
     }
 
     /* ========================================
