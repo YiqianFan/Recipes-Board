@@ -355,6 +355,26 @@
       position: relative;
       height: 240px;
       overflow: hidden;
+      background: linear-gradient(135deg, var(--color-moss) 0%, var(--color-wood-light) 100%);
+    }
+
+    .recipe-card__placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.9);
+      font-size: 3rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .recipe-card__placeholder-text {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      margin-top: 12px;
+      letter-spacing: 4px;
     }
 
     .recipe-card__image {
@@ -1013,7 +1033,7 @@
   <div class="modal" id="detailModal">
     <div class="modal__content">
       <button class="modal__close" onclick="closeDetail()">✕</button>
-      <img class="modal__image" id="modalImage" src="" alt="" onerror="this.src='https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&h=500&fit=crop'">
+      <img class="modal__image" id="modalImage" src="" alt="" style="display:none" onerror="this.style.display='none'">
       <div class="modal__body">
         <div class="modal__header">
           <h2 class="modal__title" id="modalTitle"></h2>
@@ -1092,39 +1112,147 @@
        ======================================== */
     const sampleRecipes = [
       {
-        id: Date.now() - 4,
-        name: "番茄炒蛋",
-        image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=500&fit=crop",
-        tags: ["快手", "家常"],
-        ingredients: ["番茄 2个", "鸡蛋 3个", "盐 适量", "糖 少许", "葱花 适量"],
-        steps: ["番茄切块，鸡蛋打散加少许盐", "热锅凉油，倒入蛋液炒至凝固盛出", "锅中留底油，放入番茄块翻炒出汁", "倒入炒好的鸡蛋，加盐和糖调味", "撒上葱花出锅"],
+        id: 1,
+        name: "小炒黄牛肉",
+        image: "",
+        tags: ["湘菜", "下饭", "快手菜"],
+        ingredients: ["黄牛肉（里脊或嫩肉部位）300g", "青椒（螺丝椒/杭椒）3-4个", "小米辣 5-6个", "姜 1小块", "蒜 4-5瓣", "香菜 适量", "生抽 1.5勺", "老抽 少许", "料酒 1勺", "蚝油 1勺", "淀粉 1小勺", "盐 适量"],
+        steps: ["牛肉逆纹切薄片，加入生抽、料酒、淀粉、少许食用油抓匀，腌制15-20分钟", "小米辣切段，青椒切斜段，姜蒜切片/末，香菜切段备用", "锅中热油，大火将牛肉快速滑散，变色后立即盛出备用（约30秒，不要炒老）", "锅中留底油，下姜蒜爆香，加入小米辣和青椒翻炒至断生", "倒回牛肉，加入生抽、老抽、蚝油、少许盐，大火快速翻炒均匀", "撒上香菜段，翻炒几下即可出锅装盘"],
         createdAt: new Date().toISOString()
       },
       {
-        id: Date.now() - 3,
-        name: "红烧肉",
-        image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=500&fit=crop",
-        tags: ["硬菜", "下饭"],
-        ingredients: ["五花肉 500g", "生抽 2勺", "老抽 1勺", "冰糖 30g", "八角 2个", "桂皮 1小块", "葱姜 适量"],
-        steps: ["五花肉切方块，冷水下锅焯水", "锅中放少许油，冰糖小火炒至焦糖色", "放入五花肉翻炒上色", "加生抽、老抽、八角、桂皮、葱姜", "加开水没过肉，大火烧开转小火炖1小时", "大火收汁即可"],
+        id: 2,
+        name: "酸汤肥牛",
+        image: "",
+        tags: ["酸辣开胃", "硬菜", "下饭"],
+        ingredients: ["肥牛卷 300g", "金针菇 150g", "番茄 2-3个", "泡椒 5-8个", "泡姜 适量", "黄灯笼辣椒酱 1-2大勺", "大蒜 5-6瓣", "生姜 几片", "葱花 适量", "盐 适量", "白胡椒粉 少许", "料酒 1勺", "鸡精 适量"],
+        steps: ["番茄去皮切小块；金针菇去根洗净；泡椒切碎", "锅中烧水，加少许料酒，水开后放入肥牛卷快速焯烫至变色，立即捞出沥水备用", "锅中热油，放入蒜末、姜片、泡椒爆香，加入黄灯笼辣椒酱炒出红油", "倒入番茄块，中小火翻炒至出汁软烂", "加入适量清水或高汤，大火煮开，加盐、白胡椒粉、鸡精调味", "放入金针菇煮至断生", "将焯好的肥牛放入酸汤中，轻轻搅动，煮30秒-1分钟即可关火", "撒上蒜末、葱花、香菜，淋上一勺热油激出香味即可"],
         createdAt: new Date().toISOString()
       },
       {
-        id: Date.now() - 2,
-        name: "酸辣土豆丝",
-        image: "https://images.unsplash.com/photo-1596560548464-f010549b84d7?w=800&h=500&fit=crop",
-        tags: ["素菜", "下饭"],
-        ingredients: ["土豆 2个", "干辣椒 适量", "花椒 少许", "蒜末 适量", "白醋 2勺", "盐 适量"],
-        steps: ["土豆去皮切细丝，泡水去淀粉", "锅中烧水，土豆丝焯水至断生捞出过凉水", "热锅凉油，爆香花椒、干辣椒、蒜末", "倒入土豆丝大火快炒", "加白醋、盐调味，翻炒均匀即可"],
+        id: 3,
+        name: "抓拌鸡腿肉",
+        image: "",
+        tags: ["凉菜", "下饭", "简单快手"],
+        ingredients: ["鸡腿 2-3个（约500g）", "姜片 3-4片", "葱段 适量", "料酒 1勺", "生抽 2勺", "香醋 1勺", "蚝油 1勺", "白糖 半勺", "蒜末 3-4瓣", "小米辣 适量", "香菜 适量", "辣椒油 1-2勺", "花椒油 少许", "白芝麻 适量"],
+        steps: ["鸡腿冷水下锅，加姜片、葱段、料酒，大火煮开后转中小火煮约15-20分钟至熟透", "煮好的鸡腿捞出立刻放入冰水中浸泡10分钟（使肉质紧实Q弹）", "鸡腿沥干后，用手撕成条状或切成小块", "碗中加入生抽、香醋、蚝油、白糖、蒜末、小米辣、辣椒油、花椒油拌匀成酱汁", "将酱汁倒入鸡肉中，戴上一次性手套用手抓拌均匀", "撒上香菜、白芝麻即可上桌"],
         createdAt: new Date().toISOString()
       },
       {
-        id: Date.now() - 1,
-        name: "蒜蓉西兰花",
-        image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&h=500&fit=crop",
-        tags: ["健康", "素菜"],
-        ingredients: ["西兰花 1颗", "蒜末 3瓣", "蚝油 1勺", "盐 适量", "食用油 适量"],
-        steps: ["西兰花切成小朵，用盐水浸泡10分钟", "烧一锅水，加少许盐和油，西兰花焯水1分钟捞出", "热锅凉油，爆香蒜末", "倒入西兰花快速翻炒", "加蚝油和盐调味即可"],
+        id: 4,
+        name: "爆炒大肠",
+        image: "",
+        tags: ["下饭", "硬菜", "重口味"],
+        ingredients: ["猪大肠 500g", "青红椒 各2个", "洋葱 半个", "大蒜 5-6瓣", "生姜 适量", "干辣椒 5-8个", "花椒 一小把", "葱段 适量", "面粉 适量（清洗用）", "白醋 适量（清洗用）", "料酒 2勺", "生抽 1.5勺", "老抽 少许", "蚝油 1勺", "盐 适量", "白糖 少许", "五香粉 适量"],
+        steps: ["大肠加面粉和白醋反复搓洗3-4次，去除黏液和异味，冲洗干净", "冷水下锅，加料酒、姜片、葱段，煮沸后撇去浮沫，煮约30分钟至熟，捞出切小段", "青红椒切块，洋葱切块，姜蒜切片，干辣椒剪段", "热锅凉油，放入花椒、干辣椒、姜蒜爆香", "下入大肠段，大火快速翻炒1-2分钟，炒至微微焦香", "加入料酒、生抽、老抽、蚝油翻炒均匀", "倒入青红椒、洋葱，大火翻炒至断生", "加盐、少许白糖、五香粉调味，翻炒均匀，出锅前撒葱段即可"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 5,
+        name: "辣子鸡丁",
+        image: "",
+        tags: ["下饭", "硬菜", "麻辣"],
+        ingredients: ["鸡腿肉 300g（切1.5cm小丁）", "干红辣椒 30-50g（剪段）", "花椒 10g", "蒜 5-6瓣（切片）", "姜 3-4片", "葱段 适量", "生抽 1勺", "料酒 1勺", "盐 适量", "白胡椒粉 少许", "淀粉 1勺", "蛋清 1个", "熟白芝麻 少许", "糖 少许"],
+        steps: ["鸡肉切丁，加入生抽、料酒、盐、白胡椒粉、蛋清、淀粉，抓匀腌制15-20分钟", "干辣椒剪成小段（去籽可减辣），花椒备好，蒜切片，姜切片，葱切段", "锅中倒宽油，油温六七成热时下入鸡丁，滑散炒至变色微焦，捞出备用", "锅中留少许底油，小火下入干辣椒段和花椒，慢慢煸炒出香味和红油（注意不要炒糊）", "加入蒜片、姜片爆香，倒入炒好的鸡丁，大火翻炒均匀，调入少许盐、糖", "撒入葱段和熟白芝麻，翻炒几下即可出锅"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 6,
+        name: "酸菜鲫鱼",
+        image: "",
+        tags: ["硬菜", "下饭", "鲜美"],
+        ingredients: ["鲫鱼 1-2条（约400g/条）", "酸菜 200g", "花椒 1小把", "干辣椒 5-8个", "泡椒 3-4个", "葱 2根", "姜 1块", "蒜 4-5瓣", "料酒 2勺", "盐 适量", "白胡椒粉 少许", "高汤或清水 适量", "猪油 少许（可选）"],
+        steps: ["鲫鱼去鳞去内脏，两面各划几刀，用盐、料酒腌制10-15分钟", "酸菜切段或切丝，用清水稍泡以减少过咸", "锅中放油烧热，将鲫鱼两面煎至金黄，盛出备用", "锅留底油，加少许猪油更香，爆香姜蒜、泡椒、花椒、干辣椒", "加入酸菜翻炒出香味", "倒入高汤或清水烧开，放入煎好的鲫鱼", "中小火炖煮10-15分钟，让鱼充分吸收酸菜味道", "加盐、白胡椒调味，撒葱花出锅"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 7,
+        name: "西红柿炒鸡蛋",
+        image: "./dish-tomato-scrambled-eggs.jpg",
+        tags: ["快手", "下饭", "入门菜"],
+        ingredients: ["西红柿 2-3个（中等大小）", "鸡蛋 3-4个", "葱花 适量", "盐 适量", "糖 1小勺（提鲜去酸）", "食用油 适量", "料酒 少许（可选）"],
+        steps: ["西红柿洗净，顶部划十字，用开水烫30秒后去皮，切成小块", "鸡蛋打入碗中，加少许盐和料酒，充分搅打均匀", "锅中热油（油稍多），油温七成热时倒入蛋液，底部凝固后快速划散成大块，八分熟盛出", "锅中留少许底油，放入葱花爆香，倒入西红柿块，中火翻炒至出汁变软（约2-3分钟）", "加入1小勺糖、适量盐，翻炒均匀", "将炒好的鸡蛋倒回锅中，与西红柿一起翻炒均匀", "尝一下咸淡，调整后出锅装盘"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 8,
+        name: "青椒里脊肉",
+        image: "./dish-huopijiaojiao.jpg",
+        tags: ["快手", "下饭", "家常"],
+        ingredients: ["猪里脊肉 250-300g", "青椒 3-4个", "大蒜 3-4瓣", "生姜 适量", "料酒 1勺", "生抽 2勺", "老抽 半勺", "盐 适量", "白胡椒粉 少许", "淀粉 1勺"],
+        steps: ["里脊肉逆纹切薄片（关键：逆着肌肉纤维切，口感更嫩）", "加入料酒、生抽、白胡椒粉、淀粉，抓匀腌制15-20分钟，最后加少许食用油拌匀锁住水分", "青椒去籽去蒂，切成菱形块或条状", "锅中热油，放入蒜片、姜片爆香", "大火下入腌好的里脊肉，快速翻炒至变色（约1-2分钟），盛出备用", "锅中留底油，下入青椒块，大火翻炒约1-2分钟至断生", "将肉片倒回锅中，加入生抽、老抽、盐，大火快速翻炒均匀", "翻炒约30秒即可出锅装盘"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 9,
+        name: "香辣肥肠",
+        image: "",
+        tags: ["下饭", "硬菜", "重口味"],
+        ingredients: ["猪大肠 500克", "郫县豆瓣酱 2勺", "干辣椒 10-15个", "花椒 适量", "八角 2个", "桂皮 1小块", "香叶 2片", "姜片、蒜瓣、葱段 适量", "生抽、老抽、料酒、白糖、盐 适量", "面粉、白醋（清洗用）"],
+        steps: ["猪大肠翻面，撒面粉反复揉搓冲洗干净；再用白醋和料酒搓洗一遍去腥，最后清水冲净翻回原面", "冷水下锅加姜片、料酒，大火烧开撇去浮沫，焯水5分钟后捞出切小段", "锅中加水，放入八角、桂皮、花椒、香叶、姜片、料酒，放入肥肠，大火烧开转小火卤煮40-60分钟至软烂，捞出切段", "锅中倒油，小火煸香干辣椒和花椒，加姜蒜爆香，放入郫县豆瓣酱炒出红油", "倒入卤好的肥肠，大火翻炒2-3分钟，加生抽、老抽、白糖调味", "放入青红辣椒翻炒均匀，撒葱花装盘"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 10,
+        name: "酸姜丝炒肉",
+        image: "",
+        tags: ["下饭", "快手", "开胃"],
+        ingredients: ["猪肉（里脊或前腿肉）250克", "酸姜（泡姜）150克", "青红椒 适量", "蒜瓣 3-4瓣", "料酒 1勺", "生抽 1勺", "淀粉 适量", "盐、糖 适量"],
+        steps: ["猪肉切丝，加料酒、生抽、淀粉腌制10-15分钟", "酸姜切细丝，青红椒切丝，蒜切末", "锅中热油，下肉丝滑炒至变色，盛出备用", "锅中留底油，爆香蒜末，下酸姜丝翻炒出香味", "肉丝回锅，加入青红椒丝，调入少许盐和糖，大火翻炒均匀", "装盘即可"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 11,
+        name: "炒腊肝片",
+        image: "",
+        tags: ["下饭", "腊味", "硬菜"],
+        ingredients: ["腊肝（腊制猪肝）200-300克", "青椒/红椒 适量", "洋葱 半个", "大蒜 3-4瓣", "姜片 几片", "料酒 适量", "生抽 少许", "干辣椒 几个（可选）"],
+        steps: ["腊肝切薄片，温水中浸泡30分钟去多余盐分，捞出沥干", "青椒、洋葱切块，大蒜切片，干辣椒切段", "锅中烧水，腊肝片快速焯水约10-15秒去腥，捞出沥干", "锅中热油，放姜片、蒜片、干辣椒爆香，倒入腊肝片大火快炒1-2分钟", "加料酒去腥，少许生抽调味，倒入青椒和洋葱翻炒至断生", "调味出锅即可"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 12,
+        name: "包菜回锅肉",
+        image: "",
+        tags: ["下饭", "硬菜", "经典川菜"],
+        ingredients: ["五花肉 300克", "包菜（卷心菜）半颗", "郫县豆瓣酱 1.5勺", "豆豉 少许", "生姜 几片", "大蒜 3-4瓣", "干辣椒 3-5个", "花椒 少许", "料酒 1勺", "生抽 1勺", "白糖 少许", "盐 适量"],
+        steps: ["五花肉整块冷水下锅，加姜片、料酒，大火烧开转中火煮20-25分钟至筷子能插入", "五花肉放凉后切成薄片（越薄越好）", "包菜手撕成小块（比刀切口感更好），洗净沥干", "锅中不放油或少许油，放入五花肉片中小火煸炒至微卷、出油、边缘微焦，盛出备用", "锅中留底油，小火放郫县豆瓣酱、豆豉、干辣椒、花椒炒出红油香味", "大火放入包菜，快速翻炒至断生（约1-2分钟），保持脆嫩", "倒回肉片，加生抽、少许白糖，大火翻炒均匀", "根据口味加盐调味，翻炒几下出锅"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 13,
+        name: "蒜泥白肉",
+        image: "",
+        tags: ["下酒菜", "开胃菜", "凉菜"],
+        ingredients: ["带皮五花肉 500克", "大蒜 1头（约10瓣）", "生抽 3汤匙", "香醋 1汤匙", "辣椒红油 2汤匙", "白糖 1茶匙", "花椒油 1茶匙", "香油 少许", "花椒 少许（煮肉用）", "姜片 3-4片", "葱段 适量", "料酒 1汤匙"],
+        steps: ["五花肉冷水下锅，加入姜片、葱段、花椒和料酒，大火烧开后撇去浮沫，转中小火慢煮30-40分钟（筷子能轻松插入即可）", "煮好后捞出，放入冰水中浸泡冷却，使肉质更紧实", "大蒜捣成蒜泥（越细越好），碗中加入蒜泥、生抽、香醋、白糖、花椒油、香油搅拌均匀，最后加入辣椒红油拌匀", "将冷却的五花肉切成薄片（约2-3毫米，越薄越好）", "肉片整齐码放在盘中，将调好的蒜泥酱汁均匀浇在肉片上，撒上少许葱花点缀"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 14,
+        name: "肉末麻婆豆腐",
+        image: "",
+        tags: ["下饭", "硬菜", "川菜"],
+        ingredients: ["豆腐 1块（约400克）", "猪肉末 150克", "郫县豆瓣酱 1汤匙", "辣椒粉 适量", "花椒粉 适量", "姜末 少许", "蒜末 少许", "生抽 1汤匙", "盐 少许", "水淀粉 适量", "小葱 适量"],
+        steps: ["豆腐切成约2厘米的小方块，可用开水焯一下去除豆腥味，沥干备用", "热锅凉油，放入肉末翻炒至变色出油", "加入郫县豆瓣酱和辣椒粉，翻炒出红油，再加入姜末、蒜末炒香", "加入适量清水，放入豆腐块，轻轻推动（不要搅碎），加入生抽和少许盐调味，中火煮3-5分钟让豆腐入味", "淋入水淀粉勾芡，轻轻推动使汤汁变浓稠包裹住豆腐", "出锅前撒上花椒面和小葱花即可"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 15,
+        name: "肉糜蒸蛋羹",
+        image: "",
+        tags: ["嫩滑", "快手", "老少皆宜"],
+        ingredients: ["鸡蛋 3个", "猪肉糜 150克", "温水 约300毫升（蛋液的1.5-2倍）", "盐 适量", "生抽 2汤匙", "料酒 1茶匙", "香油 少许", "姜末 少许", "白胡椒粉 少许", "葱花 适量"],
+        steps: ["猪肉糜加入少许盐、生抽、料酒、姜末，顺一个方向搅拌上劲，腌制10分钟", "鸡蛋打入碗中，加少许盐充分搅散，加入温水（约40度），搅拌均匀", "蛋液过筛1-2次，去除气泡，使蒸出的蛋羹更嫩滑", "将腌好的肉馅平铺在蒸碗底部，轻轻倒入过滤好的蛋液", "碗口覆盖保鲜膜（用牙签扎几个小孔），水开后上锅，中小火蒸12-15分钟", "蒸好后淋上生抽、香油，撒上葱花即可"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 16,
+        name: "清蒸鲈鱼",
+        image: "",
+        tags: ["硬菜", "鲜美", "宴客菜"],
+        ingredients: ["鲈鱼 1条（约600-750克）", "葱 适量", "姜 适量", "蒸鱼豉油 3大勺", "料酒 1勺", "盐 少许", "食用油 适量", "红椒丝 少许（装饰用）"],
+        steps: ["鲈鱼去鳞、去内脏、去鳃，清洗干净，在鱼身两面各斜切几刀花刀", "用少许盐和料酒均匀涂抹鱼身，腌制10-15分钟去腥", "在盘底铺上葱段和姜片，将鱼放在上面，鱼肚内也塞入少许葱姜", "锅中水烧开后，将鱼放入蒸锅，大火蒸8-10分钟", "蒸好后关火，虚蒸2分钟再开盖，将盘中的汤汁倒掉", "鱼身上铺上葱丝、姜丝、红椒丝，淋上蒸鱼豉油", "另起锅烧热油至冒烟，将热油浇在葱姜丝上，滋啦一声即成"],
         createdAt: new Date().toISOString()
       }
     ];
@@ -1163,10 +1291,11 @@
           <div class="recipe-card__top-bar"></div>
           <div class="recipe-card__side-line"></div>
           <div class="recipe-card__image-wrap">
-            <img class="recipe-card__image"
-              src="${r.image || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=600&h=400&fit=crop'}"
-              alt="${r.name}"
-              onerror="this.src='https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=600&h=400&fit=crop'">
+            ${r.image ? `<img class="recipe-card__image" src="${r.image}" alt="${r.name}" onerror="this.style.display='none'">` : ''}
+            <div class="recipe-card__placeholder">
+              <span>${r.image ? '' : '🍽️'}</span>
+              ${r.image ? '' : `<span class="recipe-card__placeholder-text">${r.name}</span>`}
+            </div>
             <div class="recipe-card__tags">
               ${r.tags.map(t => `<span class="tag">${t}</span>`).join('')}
             </div>
@@ -1198,10 +1327,7 @@
 
       list.innerHTML = recipes.map(r => `
         <div class="admin-item">
-          <img class="admin-item__thumb"
-            src="${r.image || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200&h=200&fit=crop'}"
-            alt="${r.name}"
-            onerror="this.src='https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200&h=200&fit=crop'">
+          ${r.image ? `<img class="admin-item__thumb" src="${r.image}" alt="${r.name}" onerror="this.src='./dish-tomato-scrambled-eggs.jpg'">` : `<div class="admin-item__thumb" style="background:var(--color-moss);display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;">🍽️</div>`}
           <div class="admin-item__info">
             <div class="admin-item__name">${r.name}</div>
             <div class="admin-item__tags">${r.tags.join(', ')}</div>
@@ -1222,7 +1348,13 @@
       const r = recipes.find(x => x.id == id);
       if (!r) return;
 
-      document.getElementById('modalImage').src = r.image || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&h=500&fit=crop';
+      const modalImg = document.getElementById('modalImage');
+      if (r.image) {
+        modalImg.src = r.image;
+        modalImg.style.display = 'block';
+      } else {
+        modalImg.style.display = 'none';
+      }
       document.getElementById('modalTitle').textContent = r.name;
       document.getElementById('modalTags').innerHTML = r.tags.map(t => `<span class="tag">${t}</span>`).join('');
       document.getElementById('modalIngredients').innerHTML = r.ingredients.map(i => `<li class="list__item">${i}</li>`).join('');
